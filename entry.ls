@@ -1,9 +1,10 @@
-require! <[cheerio minimist fs]>
-argv = minimist process.argv.slice 2
+require! <[cheerio request minimist fs]>
+argv = minimist process.argv.slice(2), {string: \_}
 
-[f] = argv._
+[id] = argv._
 
-body = fs.readFileSync f, \utf-8
+err, response, body <- request "http://localhost:5000/TIPO_DR/servlet/InitLogoPictureWordDetail?sKeyNO=#{id}"
+#body = fs.readFileSync f, \utf-8
 $ = cheerio.load body
 var rowspan
 rowprefix = ''
@@ -35,3 +36,22 @@ x = for i in $ 'tr'
 
 res = {[k, v] for [k, v] in x.reduce (++)}
 console.log res
+
+return unless argv.insert
+
+#err, response, img <- request "http://tmsearch.tipo.gov.tw/TIPO_DR/servlet/ShowPicture_Serv?apply_no=#{id}"
+#console.log img.length
+require! pgrest
+
+conString = argv.db ? process.env.PGDATABASE
+plx <- pgrest .new conString, {+client}
+
+<- plx.upsert {
+  collection: \trademarks
+  q: 申請案號: "#id"
+  $: $set: data: res
+}, _, -> console.log \err it
+
+console.log \done
+return plx.end!
+

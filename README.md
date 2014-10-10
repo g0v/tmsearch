@@ -19,7 +19,7 @@ Get list of trademarks based on company name:
 
 Parse specific entry given SKEY from the list:
 
-    % curl 'http://localhost:5000/TIPO_DR/servlet/InitLogoPictureWordDetail?sKeyNO={{SKEY}}' |iconv -f big5 -t utf-8 | lsc entry.ls /dev/stdin
+    % lsc entry.ls {{SKEY}}
 
 Get trademark image with SKEY:
 
