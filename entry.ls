@@ -3,7 +3,11 @@ argv = minimist process.argv.slice(2), {string: \_}
 
 [id] = argv._
 
-err, response, body <- request "http://localhost:5000/TIPO_DR/servlet/InitLogoPictureWordDetail?sKeyNO=#{id}"
+utf8proxy = process.env.UTF8PROXY_PORT ? 'localhost:5000'
+utf8proxy -= // ^tcp:\/\/ //
+console.log utf8proxy
+
+err, response, body <- request "http://#{utf8proxy}/TIPO_DR/servlet/InitLogoPictureWordDetail?sKeyNO=#{id}"
 #body = fs.readFileSync f, \utf-8
 $ = cheerio.load body
 var rowspan
@@ -54,4 +58,3 @@ plx <- pgrest .new conString, {+client}
 
 console.log \done
 return plx.end!
-
